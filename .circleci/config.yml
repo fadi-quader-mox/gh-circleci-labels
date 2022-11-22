@@ -25,38 +25,37 @@ jobs:
           name: Running Typecheck
           command: echo "Running Typecheck..."
 
-    test-app:
-      steps:
-        - run:
-          name: Running tests
-          command: echo "Running tests..."
+  test-app:
+    steps:
+      - run:
+        name: Running tests
+        command: echo "Running tests..."
 
-    ios-build-dev:
-      steps:
-        - run:
-          name: ios build dev
-          command: echo "building ios"
+  ios-dev-testflight:
+    steps:
+      - run:
+        name: ios dev testflight
+        command: echo "ios dev testflight"
 
-    android-build-dev:
-      steps:
-        - run:
-          name: Android build dev
-          command: echo "building Android"
-
-    ios-dev-testflight:
-      steps:
-        - run:
-          name: ios dev testflight
-          command: echo "ios dev testflight"
-
-    android-dev-playstore:
-      steps:
-        - run:
-          name: Android dev playstore
-          command: echo "Android dev playstore"
+  android-dev-playstore:
+    steps:
+      - run:
+        name: Android dev playstore
+        command: echo "Android dev playstore"
 
 workflows:
   version: 2
   test_and_push:
     jobs:
-
+      - test-typecheck:
+          context: build-test-push
+      - test-app:
+          context: build-test-push
+      - android-dev-playstore:
+          context: build-test-push
+          requires:
+            - test-app
+      - ios-dev-testflight:
+          context: build-test-push
+          requires:
+            - test-app
