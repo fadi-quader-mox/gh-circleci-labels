@@ -1,0 +1,62 @@
+version: 2.1
+
+commands:
+  pr-pentest-label:
+    description: 'Check if PR has pentest label'
+    steps:
+      - run:
+          name: "Check if PR has pentest label"
+          command: |
+            export ORG_NAME=ProjectDrgn
+            PR_LABEL=$(curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            --location --request GET "https://api.github.com/repos/$ORG_NAME/$CIRCLE_PROJECT_REPONAME/pulls?head=$ORG_NAME:$CIRCLE_BRANCH&state=open" 2>&1 | grep -o '"name": "pentest"')
+            if [ -z ${PR_LABEL} ]; then
+              export PENTEST_LABEL=pentest
+            else
+             echo "PR label not set"
+            fi
+
+jobs:
+  test-typecheck:
+    steps:
+      - run:
+          name: Running Typecheck
+          command: echo "Running Typecheck..."
+
+    test-app:
+      steps:
+        - run:
+          name: Running tests
+          command: echo "Running tests..."
+
+    ios-build-dev:
+      steps:
+        - run:
+          name: ios build dev
+          command: echo "building ios"
+
+    android-build-dev:
+      steps:
+        - run:
+          name: Android build dev
+          command: echo "building Android"
+
+    ios-dev-testflight:
+      steps:
+        - run:
+          name: ios dev testflight
+          command: echo "ios dev testflight"
+
+    android-dev-playstore:
+      steps:
+        - run:
+          name: Android dev playstore
+          command: echo "Android dev playstore"
+
+workflows:
+  version: 2
+  test_and_push:
+    jobs:
+
